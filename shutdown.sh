@@ -19,12 +19,4 @@ if [ -n "$pid" ]; then
                 pid=`ps -C ${target} -o pid=`
         done
 fi
-# build
-echo "Start build"
-git pull --rebase
-go build
-echo "Finish build"
-# run
-echo "Starting..."
-nohup ./${target} >> app.log &
 echo "Done"
