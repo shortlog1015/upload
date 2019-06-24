@@ -13,11 +13,12 @@ func main() {
 	})
 	http.Handle("/", http.StripPrefix("", http.FileServer(http.Dir("./public"))))
 	http.HandleFunc("/sub", getUploadFile)
+	http.HandleFunc("/trans", getTransFile)
 	http.ListenAndServe(":12700", nil)
 }
 
 func getUploadFile(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseMultipartForm(8 << 20); err != nil {
+	if err := r.ParseMultipartForm(8 << 24); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -54,4 +55,8 @@ func getMultiPartFiles(r *http.Request, key string) ([]*multipart.FileHeader, er
 		}
 	}
 	return nil, http.ErrMissingFile
+}
+
+func getTransFile(w http.ResponseWriter, r *http.Request) {
+
 }
