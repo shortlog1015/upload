@@ -17,4 +17,5 @@ src/
 *.code-workspace
 **/config/*.json
 
-upload
+client/client
+server/server
