@@ -16,3 +16,5 @@ src/
 *.pid
 *.code-workspace
 **/config/*.json
+
+upload
