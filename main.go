@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -50,8 +49,6 @@ func getUploadFile(w http.ResponseWriter, r *http.Request) {
 
 func getMultiPartFiles(r *http.Request, key string) ([]*multipart.FileHeader, error) {
 	if r.MultipartForm != nil && r.MultipartForm.File != nil {
-		log.Println(r.MultipartForm.File)
-		log.Println(r.MultipartForm.Value)
 		if fhs := r.MultipartForm.File[key]; len(fhs) > 0 {
 			return fhs, nil
 		}
