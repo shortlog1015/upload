@@ -69,6 +69,7 @@ func getTransFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := r.ParseMultipartForm(8 << 24); err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -82,26 +83,52 @@ func getTransFile(w http.ResponseWriter, r *http.Request) {
 	}
 	fileHeaders, err := getMultiPartFiles(r, "content")
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	for _, fh := range fileHeaders {
-		srcFile, err := fh.Open()
+		content, err := getSrcContent(fh)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusResetContent)
 			return
 		}
-		defer srcFile.Close()
-		dstFile, err := os.Create("./files/" + fh.Filename)
+
+		dstFile, err := os.OpenFile("./files/"+name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusResetContent)
 			return
 		}
 		defer dstFile.Close()
-		if _, err := io.Copy(dstFile, srcFile); err != nil {
+
+		_, err = dstFile.WriteAt(content, int64(off))
+		if err != nil {
+			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte("files ok"))
+		w.Write([]byte("trans file ok"))
 	}
+}
+
+func exist(name string) bool {
+	if _, err := os.Stat("./files/" + name); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
+
+func getSrcContent(fh *multipart.FileHeader) (content []byte, err error) {
+	srcFile, err := fh.Open()
+	if err != nil {
+		return
+	}
+	defer srcFile.Close()
+	content = make([]byte, fh.Size)
+	_, err = srcFile.Read(content)
+	return
 }

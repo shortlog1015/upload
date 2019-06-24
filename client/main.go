@@ -37,7 +37,9 @@ func main() {
 				return
 			}
 		}
-		log.Println(n)
+		if n < len(content) {
+			content = content[:n]
+		}
 
 		body := &bytes.Buffer{}
 		writer := multipart.NewWriter(body)
