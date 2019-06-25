@@ -10,7 +10,7 @@ if [ -n "$pid" ]; then
             echo "Force shutdown..."
             kill -9 $(ps -C ${target} -o pid=)
         else
-            kill -s 2 $(ps -C ${target} -o pid=)
+            kill $(ps -C ${target} -o pid=)
         fi
         # wait for program to stop
         pid=`ps -C ${target} -o pid=`
