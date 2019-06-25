@@ -7,16 +7,28 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 func main() {
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
-	http.Handle("/", http.StripPrefix("", http.FileServer(http.Dir("./public"))))
-	http.HandleFunc("/sub", getUploadFile)
-	http.HandleFunc("/trans", getTransFile)
-	http.ListenAndServe(":12700", nil)
+	mux.Handle("/", http.StripPrefix("", http.FileServer(http.Dir("./public"))))
+	mux.HandleFunc("/sub", getUploadFile)
+	mux.HandleFunc("/trans", getTransFile)
+	server := &http.Server{
+		Addr:         ":12700",
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  3 * time.Second,
+	}
+	server.SetKeepAlivesEnabled(true)
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func getUploadFile(w http.ResponseWriter, r *http.Request) {
