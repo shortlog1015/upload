@@ -22,7 +22,7 @@ func main() {
 		Addr:         ":12700",
 		Handler:      mux,
 		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  3 * time.Second,
 	}
 	server.SetKeepAlivesEnabled(true)
