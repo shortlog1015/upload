@@ -21,8 +21,8 @@ func main() {
 	server := &http.Server{
 		Addr:         ":12700",
 		Handler:      mux,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 60 * time.Second,
 		IdleTimeout:  3 * time.Second,
 	}
 	server.SetKeepAlivesEnabled(true)
