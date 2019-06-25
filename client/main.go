@@ -80,7 +80,7 @@ func dealTranslate(args *Args) {
 		"name": {name},
 		"off":  {strconv.Itoa(int(offset))},
 	}
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf(TestURL, vals.Encode()), body)
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf(URL, vals.Encode()), body)
 	if err != nil {
 		log.Println(err)
 		return
