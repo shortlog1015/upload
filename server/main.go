@@ -76,7 +76,6 @@ func getTransFile(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	name := query.Get("name")
 	off, _ := strconv.Atoi(query.Get("off"))
-	log.Println(name, off)
 	if name == "" {
 		http.Error(w, "no name", http.StatusBadRequest)
 		return
@@ -94,21 +93,31 @@ func getTransFile(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusResetContent)
 			return
 		}
-
-		dstFile, err := os.OpenFile("./files/"+name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusResetContent)
-			return
+		var dstFile *os.File
+		if exist(name) {
+			dstFile, err = os.OpenFile("./files/"+name, os.O_RDWR, 0666)
+			if err != nil {
+				log.Println(err)
+				http.Error(w, err.Error(), http.StatusResetContent)
+				return
+			}
+		} else {
+			dstFile, err = os.Create("./files/" + name)
+			if err != nil {
+				log.Println(err)
+				http.Error(w, err.Error(), http.StatusResetContent)
+				return
+			}
 		}
 		defer dstFile.Close()
-
-		_, err = dstFile.WriteAt(content, int64(off))
+		var n int
+		n, err = dstFile.WriteAt(content, int64(off))
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		log.Println("write:", n, "off:", off)
 		w.Write([]byte("trans file ok"))
 	}
 }
